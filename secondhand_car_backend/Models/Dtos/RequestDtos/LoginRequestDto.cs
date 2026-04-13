@@ -1,6 +1,6 @@
 ﻿namespace secondhand_car_backend.Models.Dtos.RequestDtos
 {
-    public class LoginRequestDtos
+    public class LoginRequestDto
     {
         public string? Email { get; set; }
         public string? Password { get; set; }
