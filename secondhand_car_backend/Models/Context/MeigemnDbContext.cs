@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarCheck.Backend.Models.Context
+namespace secondhand_car_backend.Models.Context
 {
     // (creacion de usuario)Heredamos de IdentityDbContext<IdentityUser>. 
     
