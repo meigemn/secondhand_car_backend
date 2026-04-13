@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>CarCheck.Backend</RootNamespace>
+		<UserSecretsId>28f74a37-121b-4203-9a62-3b59ed90a18d</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
