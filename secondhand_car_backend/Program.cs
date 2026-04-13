@@ -1,4 +1,4 @@
-using CarCheck.Backend.Models.Context;
+using secondhand_car_backend.Models.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
