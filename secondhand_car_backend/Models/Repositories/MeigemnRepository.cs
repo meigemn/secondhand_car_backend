@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using secondhand_car_backend.Models.Context
+using secondhand_car_backend.Models.Context;
 using secondhand_car_backend.Utils;
 using System.Linq.Expressions;
 using System.Reflection;
