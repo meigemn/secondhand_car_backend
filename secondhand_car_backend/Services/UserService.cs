@@ -76,7 +76,7 @@ namespace secondhand_car_backend.Services
                 foreach (var role in userRoles)
                     claims.Add(new Claim(ClaimTypes.Role, role));
 
-                var key = Encoding.ASCII.GetBytes(_appSettings.CurrentValue.Secret);
+                var key = Encoding.UTF8.GetBytes(_appSettings.CurrentValue.Secret);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
