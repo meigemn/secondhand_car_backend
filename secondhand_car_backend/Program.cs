@@ -2,6 +2,13 @@ using secondhand_car_backend.Models.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using secondhand_car_backend.Services;
+using secondhand_car_backend.Models.Pocos;
+using secondhand_car_backend.Models.UnitsOfWork;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using secondhand_car_backend.Models.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,14 +17,16 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 // 2. Add services to the container.
-
 builder.Services.AddControllers()
     .AddNewtonsoftJson();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 ///---
-    ///Creacion de la base de datos y tablas para el login/registro de usuarios con Identity
+/// Configuración de la base de datos y Identity
+///---
+
 // 1. Leemos la conexión de appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -25,42 +34,65 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<MeigemnDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// 3. Activamos el sistema de Identity para que gestione el login/registro
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<MeigemnDbContext>();
-builder.Services.AddAuthorization(); // asegura que Identity use los esquemas que se han definido arriba
-
-/// Fin de la configuracion para el login/registro de usuarios con Identity
-///---
+// 3. Configuración de Identity (Personalizada para convivir con JWT manual)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<MeigemnDbContext>()
+    .AddDefaultTokenProviders();
 
 ///---
-/// Configuracion para la autenticacion con JWT (Json Web Tokens)
+/// Registro de Servicios Propios e Inyección de Dependencias
+///---
+
+// Mapeo de la sección AppSettings del JSON a la clase POCO
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+// Registro de la Unidad de Trabajo y Servicios de aplicación
+builder.Services.AddScoped<MeigemnUnitOfWork>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+
+///---
+/// Configuración para la autenticación con JWT (Json Web Tokens)
+///---
+
 // 1. Obtener la clave secreta de los User Secrets
 var jwtSecret = builder.Configuration["AppSettings:Secret"];
-var key = System.Text.Encoding.ASCII.GetBytes(jwtSecret);
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    throw new Exception("JWT Secret no encontrado en la configuración. Revisa tus User Secrets.");
+}
+
+var key = Encoding.ASCII.GetBytes(jwtSecret);
 
 // 2. Configurar cómo la API validará a los usuarios (Authentication)
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key),
+        IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = false,
-        ValidateAudience = false
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero // Elimina el tiempo de gracia de 5 min por defecto
     };
 });
-/// Fin de la configuracion para la autenticacion con JWT
-///---
-var app = builder.Build();
-app.MapIdentityApi<IdentityUser>(); //Mapear los endpoint de Identity para que esten disponibles en la API
 
-// 3. Configure the HTTP request pipeline.
+builder.Services.AddAuthorization();
+builder.Services.AddScoped(typeof(MeigemnRepository<>));
+
+///---
+/// Construcción de la aplicación (Middleware Pipeline)
+///---
+
+var app = builder.Build();
+
+// NOTA: Se ha eliminado app.MapIdentityApi para usar tus propios controladores personalizados
+
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -69,8 +101,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Importante: Si vas a usar Usuarios/Login, el orden debe ser:
-app.UseAuthentication(); 
+// Importante: El orden es fundamental para que la seguridad funcione
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
