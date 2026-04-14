@@ -1,36 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using secondhand_car_backend.Services; // Cambiado al nombre de tu proyecto actual
+using secondhand_car_backend.Services;
 
 namespace secondhand_car_backend.Controllers
 {
     public class BaseController : ControllerBase
     {
-        #region Miembros privados
+        protected readonly IServiceProvider _serviceCollection;
 
-        public readonly IServiceProvider _serviceCollection;
-
-        #endregion
-
-        #region Miembros internos
-
-        // Añadimos el cast correcto y el operador '!' para evitar avisos de nulos si estás en .NET 8
-        internal ILogger Logger => (ILogger)_serviceCollection.GetService(typeof(ILogger))!;
-        internal IConfiguration Configuration => (IConfiguration)_serviceCollection.GetService(typeof(IConfiguration))!;
-        internal IUsersService ServiceUsers => (IUsersService)_serviceCollection.GetService(typeof(IUsersService))!;
-
-        #endregion
-
-        #region Constructores
-
-        /// <summary>
-        /// Constructor base, almacena el service collection
-        /// </summary>
-        /// <param name="serviceCollection"></param>
         public BaseController(IServiceProvider serviceCollection)
         {
             _serviceCollection = serviceCollection;
         }
 
-        #endregion
+        
+        // Usamos ILoggerFactory para crear un logger basado en el nombre de la clase que esté ejecutándose
+        internal ILogger Logger => _serviceCollection.GetRequiredService<ILoggerFactory>()
+                                    .CreateLogger(GetType().Name);
+
+        internal IConfiguration Configuration => _serviceCollection.GetRequiredService<IConfiguration>();
+
+        internal IUsersService ServiceUsers => _serviceCollection.GetRequiredService<IUsersService>();
     }
 }
