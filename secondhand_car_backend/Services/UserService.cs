@@ -31,28 +31,24 @@ namespace secondhand_car_backend.Services
     public sealed class UsersService : BaseService, IUsersService
     {
         #region Miembros privados
-
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IOptionsMonitor<AppSettings> _appSettings;
-
         #endregion
 
         #region Constructores
-
         public UsersService(
             MeigemnUnitOfWork meigemnUnitOfWork,
-            ILogger<UsersService> logger, // Se inyecta el logger específico
+            ILogger<UsersService> logger,
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             IOptionsMonitor<AppSettings> appSettings)
-            : base(meigemnUnitOfWork, logger) // Se pasan al BaseService
+            : base(meigemnUnitOfWork, logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _appSettings = appSettings;
         }
-
         #endregion
 
         #region Implementación de IUsersService
@@ -62,22 +58,14 @@ namespace secondhand_car_backend.Services
             try
             {
                 var user = await _userManager.FindByEmailAsync(login.Email);
-
                 if (user == null)
-                {
                     return new LoginResponseDto { Success = false, Message = Literals.UserMessages.UserNotFound };
-                }
 
                 var passwordValid = await _userManager.CheckPasswordAsync(user, login.Password);
-
                 if (!passwordValid)
-                {
                     return new LoginResponseDto { Success = false, Message = Literals.UserMessages.InvalidPassword };
-                }
 
                 var userRoles = await _userManager.GetRolesAsync(user);
-
-                
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -86,9 +74,7 @@ namespace secondhand_car_backend.Services
                 };
 
                 foreach (var role in userRoles)
-                {
                     claims.Add(new Claim(ClaimTypes.Role, role));
-                }
 
                 var key = Encoding.ASCII.GetBytes(_appSettings.CurrentValue.Secret);
                 var tokenDescriptor = new SecurityTokenDescriptor
@@ -122,7 +108,6 @@ namespace secondhand_car_backend.Services
         {
             try
             {
-                // Usamos la UnitOfWork que ya tiene el repositorio de IdentityUser
                 return await _unitOfWork.Users.GetAll()
                     .Select(u => new UserDto
                     {
@@ -189,33 +174,30 @@ namespace secondhand_car_backend.Services
             }
         }
 
-        public async Task<CreateEditRemoveResponseDto> Remove(string id)
+        public async Task<CreateEditRemoveResponseDto> CreateAdmin(CreateUserDto createUserDto)
         {
             var response = new CreateEditRemoveResponseDto();
             try
             {
-                var user = await _userManager.FindByIdAsync(id);
-                if (user == null)
-                {
-                    response.Success = false;
-                    // CAMBIO: Consistencia en los mensajes de error
-                    response.Errors.Add(Literals.UserMessages.UserNotFound);
-                    return response;
-                }
+                var user = new IdentityUser { UserName = createUserDto.UserName, Email = createUserDto.Email };
+                var result = await _userManager.CreateAsync(user, createUserDto.Password);
 
-                var result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
-                    // IMPORTANTE: Al ser un cambio que afecta a la base de datos,
-                    // confirmamos la transacción con el UnitOfWork.
+                    await _userManager.AddToRoleAsync(user, "Admin");
                     await _unitOfWork.Complete();
                     response.Success = true;
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Errors.AddRange(result.Errors.Select(e => e.Description));
                 }
                 return response;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en Remove");
+                _logger.LogError(ex, "Error en CreateAdmin");
                 throw;
             }
         }
@@ -229,7 +211,7 @@ namespace secondhand_car_backend.Services
                 if (user == null)
                 {
                     response.Success = false;
-                    response.Errors.Add("Usuario no encontrado.");
+                    response.Errors.Add(Literals.UserMessages.UserNotFound);
                     return response;
                 }
 
@@ -256,7 +238,7 @@ namespace secondhand_car_backend.Services
                 var user = await _userManager.FindByIdAsync(userDto.Id);
                 if (user == null)
                 {
-                    response.Errors.Add("Usuario no encontrado.");
+                    response.Errors.Add(Literals.UserMessages.UserNotFound);
                     return response;
                 }
 
