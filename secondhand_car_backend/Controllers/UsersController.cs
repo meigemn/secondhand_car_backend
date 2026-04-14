@@ -8,6 +8,7 @@ using secondhand_car_backend.Models.Dtos.EntityDtos;
 using Serilog.Core;
 using secondhand_car_backend.Models.Dtos.CreateDtos;
 using secondhand_car_backend.Models.Dtos.EntityDtos;
+using secondhand_car_backend.Utils;
 
 namespace secondhand_car_backend.Controllers
 {
@@ -134,7 +135,7 @@ namespace secondhand_car_backend.Controllers
                 // Verificar si el login fue exitoso
                 if (!loginResult.Success)
                 {
-                    return Unauthorized(new { message = loginResult.Message ?? "Credenciales inválidas" });
+                    return Unauthorized(new { message = loginResult.Message ?? Literals.Credentials.InvalidCredentials });
                 }
 
                 return Ok(loginResult);
