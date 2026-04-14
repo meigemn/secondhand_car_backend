@@ -14,5 +14,11 @@
         {
             public const string InvalidToken = "Token no válido.";
         }
+
+        public static class  Credentials
+        {
+            public const string InvalidCredentials = "Credenciales inválidas";
+
+        }
     }
 }
