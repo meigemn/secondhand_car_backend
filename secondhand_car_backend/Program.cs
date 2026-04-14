@@ -21,6 +21,8 @@ builder.Services.AddControllers()
     .AddNewtonsoftJson();
 
 builder.Services.AddEndpointsApiExplorer();
+
+/// Permite la auntenticacion mediante token en el swagger
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Tu API de Coches", Version = "v1" });
@@ -98,17 +100,23 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = false,
         ValidateAudience = false,
-        ClockSkew = TimeSpan.Zero // Elimina el tiempo de gracia de 5 min por defecto
+        ClockSkew = TimeSpan.Zero, // Elimina el tiempo de gracia de 5 min por defecto
+        NameClaimType = "name",
+        RoleClaimType = "role"
     };
+    options.MapInboundClaims = false;
 });
 
 builder.Services.AddAuthorization();
