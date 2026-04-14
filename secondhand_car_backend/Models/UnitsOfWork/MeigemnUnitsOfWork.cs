@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using secondhand_car_backend.Models.Context;
-using secondhand_car_backend.Entities;
+//using secondhand_car_backend.Entities;
 using secondhand_car_backend.Models.Context;
 using secondhand_car_backend.Models.Repositories;
 using System;
@@ -17,7 +17,7 @@ namespace secondhand_car_backend.Models.UnitsOfWork
     public sealed class MeigemnUnitOfWork : IDisposable
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger _logger;
+        private readonly ILogger<MeigemnUnitOfWork>  _logger;
         private readonly MeigemnDbContext _context;
 
         // Repositorios
@@ -28,7 +28,7 @@ namespace secondhand_car_backend.Models.UnitsOfWork
         public Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database => _context.Database;
 
         // Constructor
-        public MeigemnUnitOfWork(MeigemnDbContext context, IServiceProvider serviceProvider, ILogger logger)
+        public MeigemnUnitOfWork(MeigemnDbContext context, IServiceProvider serviceProvider, ILogger<MeigemnUnitOfWork> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
