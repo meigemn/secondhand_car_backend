@@ -4,6 +4,6 @@
     {
         public string Description { get; set; }
         public bool IsPositive { get; set; }
-        public int CarPartId { get; set; }
+        
     }
 }
