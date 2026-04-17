@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using secondhand_car_backend.Models.Entities;
 
 namespace secondhand_car_backend.Models.Context
 {
@@ -32,6 +33,16 @@ namespace secondhand_car_backend.Models.Context
                 entity.Property(e => e.Name).IsRequired();
             });
             */
+            modelBuilder.Entity<CarPart>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.PartName).IsRequired();
+                entity.Property(e => e.Category).IsRequired();
+                entity.HasMany(e => e.Criteria)
+                      .WithOne(c => c.CarPart)
+                      .HasForeignKey(c => c.CarPartId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
