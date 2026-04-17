@@ -8,6 +8,6 @@
 
         //claves ajenas
         public int CarPartId { get; set; }
-        public CarParts CarParts { get; set; }
+        public CarPart CarPart { get; set; }
     }
 }

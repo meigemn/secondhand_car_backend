@@ -2,7 +2,7 @@
 
 namespace secondhand_car_backend.Models.Entities
 {
-    public class CarParts
+    public class CarPart
     {
         [Key]
         public int Id { get; set; }
