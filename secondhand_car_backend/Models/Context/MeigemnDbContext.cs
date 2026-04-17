@@ -5,8 +5,7 @@ using secondhand_car_backend.Models.Entities;
 
 namespace secondhand_car_backend.Models.Context
 {
-    // (creacion de usuario)Heredamos de IdentityDbContext<IdentityUser>. 
-    
+   
     public class MeigemnDbContext : IdentityDbContext<IdentityUser>
     {
         // (creacion de usuario) El constructor recibe las opciones (como la cadena de conexión) 
@@ -16,23 +15,18 @@ namespace secondhand_car_backend.Models.Context
         {
         }
 
-        // 4. DbSet: Aquí es donde declararemos las tablas de los coches más adelante.
-        // Por ahora, al heredar de IdentityDbContext, las tablas de usuarios son "invisibles" pero están ahí.
-        // public DbSet<CarPart> CarParts { get; set; }
+        #region dbSets
+        public DbSet<CarPart> CarParts { get; set; }
+        public DbSet<PartCriterion> PartCriteria { get; set; }
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            
             base.OnModelCreating(modelBuilder);
 
-            // 6. Aquí es donde en el futuro pondremos las reglas personalizadas para los coches.
-            // Ejemplo: Indicar que el nombre de la pieza es obligatorio.
-            /*
-            modelBuilder.Entity<CarPart>(entity => {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Name).IsRequired();
-            });
-            */
+            #region tables
+
             modelBuilder.Entity<CarPart>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -43,6 +37,15 @@ namespace secondhand_car_backend.Models.Context
                       .HasForeignKey(c => c.CarPartId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+            modelBuilder.Entity<PartCriterion>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Description).IsRequired();
+                entity.Property(e => e.IsPositive).IsRequired();
+                entity.Property(e => e.CarPartId).IsRequired();
+            });
+
+            #endregion
         }
     }
 }
