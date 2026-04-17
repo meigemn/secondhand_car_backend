@@ -17,7 +17,7 @@ namespace secondhand_car_backend.Models.Context
 
         #region dbSets
         public DbSet<CarPart> CarParts { get; set; }
-        public DbSet<PartCriterionDto> PartCriteria { get; set; }
+        public DbSet<PartCriterion> PartCriteria { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
