@@ -99,7 +99,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en Login");
+                _logger.LogError(ex, Literals.UserServiceErrors.LoginError);
                 throw;
             }
         }
@@ -119,7 +119,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetAll");
+                _logger.LogError(ex, Literals.UserServiceErrors.GetAllError);
                 throw;
             }
         }
@@ -141,7 +141,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetById");
+                _logger.LogError(ex, Literals.UserServiceErrors.GetByIdError);
                 throw;
             }
         }
@@ -169,7 +169,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en Create");
+                _logger.LogError(ex, Literals.UserServiceErrors.GetByIdError);
                 throw;
             }
         }
@@ -197,7 +197,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en CreateAdmin");
+                _logger.LogError(ex, Literals.UserServiceErrors.CreateAdminError);
                 throw;
             }
         }
@@ -225,7 +225,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en Remove");
+                _logger.LogError(ex, Literals.UserServiceErrors.RemoveError);
                 throw;
             }
         }
@@ -255,7 +255,7 @@ namespace secondhand_car_backend.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en Update");
+                _logger.LogError(ex, Literals.UserServiceErrors.UpdateError);
                 throw;
             }
         }
