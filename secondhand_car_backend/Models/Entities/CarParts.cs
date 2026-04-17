@@ -9,5 +9,6 @@ namespace secondhand_car_backend.Models.Entities
         public string PartName { get; set; }
         public string Category { get; set; }
 
+        public List<PartCriterion> Criteria { get; set; } = new();
     }
 }
