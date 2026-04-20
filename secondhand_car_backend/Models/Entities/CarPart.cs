@@ -12,6 +12,6 @@ namespace secondhand_car_backend.Models.Entities
         [Required]
         public string Category { get; set; }
 
-        public List<PartCriterionDto> Criteria { get; set; } = new();
+        public List<PartCriterion> Criteria { get; set; } = new();
     }
 }
