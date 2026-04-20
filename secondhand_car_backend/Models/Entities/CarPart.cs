@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using secondhand_car_backend.Models.Dtos.EntityDtos;
+using System.ComponentModel.DataAnnotations;
 
 namespace secondhand_car_backend.Models.Entities
 {
