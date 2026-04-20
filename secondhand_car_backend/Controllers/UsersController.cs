@@ -6,8 +6,6 @@ using secondhand_car_backend.Controllers;
 using secondhand_car_backend.Models.Dtos.CreateDtos;
 using secondhand_car_backend.Models.Dtos.EntityDtos;
 using Serilog.Core;
-using secondhand_car_backend.Models.Dtos.CreateDtos;
-using secondhand_car_backend.Models.Dtos.EntityDtos;
 using secondhand_car_backend.Utils;
 
 namespace secondhand_car_backend.Controllers
