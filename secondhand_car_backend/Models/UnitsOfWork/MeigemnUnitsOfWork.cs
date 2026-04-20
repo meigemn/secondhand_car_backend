@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using secondhand_car_backend.Models.Context;
 //using secondhand_car_backend.Entities;
 using secondhand_car_backend.Models.Context;
+using secondhand_car_backend.Models.Entities;
 using secondhand_car_backend.Models.Repositories;
 using System;
 using System.Data;
@@ -22,7 +23,8 @@ namespace secondhand_car_backend.Models.UnitsOfWork
 
         // Repositorios
         private MeigemnRepository<IdentityUser>? _usersRepository;
- 
+        private MeigemnRepository<CarPart>? _carPartsRepository;
+        private MeigemnRepository<PartCriterion>? _partCriterionsRepository;
 
         // Propiedad de acceso a la base de datos
         public Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database => _context.Database;
@@ -37,7 +39,8 @@ namespace secondhand_car_backend.Models.UnitsOfWork
 
         // --- Repositorios ---
         public MeigemnRepository<IdentityUser> Users => _usersRepository ??= GetRepository<IdentityUser>();
-
+        public MeigemnRepository<CarPart> CarParts => _carPartsRepository ??= GetRepository<CarPart>();
+        public MeigemnRepository<PartCriterion> PartCriterions => _partCriterionsRepository ??= GetRepository<PartCriterion>();
 
         // --- Métodos de Transacción y Guardado ---
 
